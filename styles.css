@@ -2249,3 +2249,186 @@ nav a,
   .logo-item:hover img,
   .logo-strip .logos div:hover { transform: none !important; }
 }
+
+/* ===== MOBILE COLOR FIDELITY FIX =====
+   Mobile Safari and some Android Chromium builds render soft-light/overlay
+   grain more aggressively than desktop. Keep the same palette while using
+   normal compositing on touch-sized screens. */
+@media (max-width: 900px) {
+  html { color-scheme: dark; }
+
+  .noise::before,
+  .noise::after {
+    mix-blend-mode: normal !important;
+  }
+  .noise::before { opacity: .034 !important; }
+  .noise::after { opacity: .012 !important; }
+
+  /* Preserve the intended neutral image treatment without the darker
+     touch-hover override that was shifting perceived color and contrast. */
+  .wave-card .image-grayscale,
+  .wave-card:hover .image-grayscale {
+    filter: grayscale(100%) contrast(1.08) brightness(.95) !important;
+  }
+
+  /* Keep mobile taps from temporarily inheriting unexpected section colors. */
+  .route-grid-four > a:hover { background: var(--paper) !important; }
+  .belief-card:hover { background: transparent !important; }
+  .bento-card:hover { background: #131313 !important; }
+  .logo-item:hover { background: rgba(26, 23, 21, .4) !important; }
+}
+
+/* ===== FINAL MOBILE PLATFORM QA: PALETTE + ALIGNMENT =====
+   Desktop rules remain untouched. These overrides only normalize iOS Safari
+   and Android Chromium rendering at mobile widths. */
+@media (max-width: 900px) {
+  :root {
+    --acid: #d6ff3f;
+  }
+
+  html {
+    color-scheme: only light;
+    background: #f1efe8;
+  }
+
+  /* Use the exact same grain blend as desktop. The previous mobile normal
+     blend darkened the acid green and made it look like a different color. */
+  .noise::before,
+  .noise::after {
+    mix-blend-mode: soft-light !important;
+  }
+  .noise::before { opacity: .052 !important; }
+  .noise::after {
+    opacity: .018 !important;
+    mix-blend-mode: overlay !important;
+  }
+
+  /* Lock every acid-green surface to the desktop sRGB value. */
+  .metrics,
+  .contact,
+  .button.primary,
+  .current::before,
+  .pulse,
+  .loader-progress {
+    background-color: #d6ff3f !important;
+  }
+  .brand span,
+  .highlights-complex .highlights-label,
+  .system-grid article > span,
+  .system-grid li::before,
+  .quantpi-overlay-value,
+  .text-acid {
+    color: #d6ff3f !important;
+  }
+  .highlights-complex .highlights-label {
+    border-color: rgba(214,255,63,.28) !important;
+  }
+
+  /* Prevent Android auto-darkening and forced color transformations. */
+  .metrics,
+  .contact,
+  .button.primary,
+  .highlights-complex .highlights-label,
+  .brand-chapters,
+  .wave-card,
+  .route-grid-four > a {
+    forced-color-adjust: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Keep the desktop image treatment on mobile. Touch should not alter tone. */
+  .wave-card .image-grayscale,
+  .wave-card:hover .image-grayscale {
+    filter: grayscale(100%) contrast(1.1) brightness(.9) !important;
+  }
+
+  /* Consistent horizontal alignment across header, highlights and sections. */
+  .topbar,
+  .section-pad,
+  .waves-cards-wrap,
+  .highlights-complex .highlights-label,
+  footer {
+    --mobile-gutter: max(24px, env(safe-area-inset-left));
+  }
+  .highlights-complex .highlights-label {
+    margin-left: max(24px, env(safe-area-inset-left)) !important;
+  }
+
+  /* Highlights remain connected to the hero without touching its content. */
+  .highlights-complex {
+    position: relative;
+    z-index: 6;
+    margin-top: -18px;
+  }
+  .highlights-complex .highlights-label {
+    margin-bottom: 10px;
+  }
+  .metrics article,
+  .brand-chapters article {
+    min-width: 0;
+  }
+  .metrics strong,
+  .metrics article > span {
+    color: #101310 !important;
+  }
+  .metrics p {
+    color: #101310 !important;
+    opacity: .78;
+  }
+
+  /* Avoid accidental misalignment from long metric values. */
+  .metrics article {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: baseline;
+  }
+  .metrics p {
+    flex-basis: 100%;
+  }
+
+  /* Card fronts and backs share one mobile width and clean vertical rhythm. */
+  .wave-card,
+  .flip-card-inner,
+  .flip-card-front,
+  .flip-card-back {
+    width: 100%;
+    max-width: 100%;
+  }
+  .flip-card-front > div:last-child,
+  .flip-card-back > div {
+    min-width: 0;
+  }
+  .front-proof-value,
+  .front-proof-label,
+  .wave-summary,
+  .flip-card-back li,
+  .flip-card-back p {
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep touch transitions color-neutral and free of inherited hover states. */
+  .route-grid-four > a:hover,
+  .belief-card:hover,
+  .bento-card:hover,
+  .logo-item:hover {
+    filter: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .highlights-complex .highlights-label {
+    margin-left: max(20px, env(safe-area-inset-left)) !important;
+  }
+  .metrics article {
+    min-height: 112px;
+  }
+  .metrics strong {
+    line-height: 1;
+  }
+  .brand-chapters article {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
