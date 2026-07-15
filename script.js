@@ -282,3 +282,38 @@ document.querySelectorAll('.wave-number').forEach(num => {
   addEventListener('resize', requestScrollMotion);
   requestScrollMotion();
 })();
+
+
+/* ===== AUTOMATIC POST-JOURNEY ACTIVATION =====
+   On touch devices and narrow screens, hover states are unavailable or sticky.
+   Activate the visual state of later-section cards when they move through the
+   reading zone, and remove it as the next item takes focus. */
+(() => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = [
+    ...document.querySelectorAll('.belief-card'),
+    ...document.querySelectorAll('.system-card'),
+    ...document.querySelectorAll('.route-grid > a'),
+    ...document.querySelectorAll('.mindset')
+  ];
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const group = entry.target.matches('.belief-card') ? '.belief-card' :
+          entry.target.matches('.system-card') ? '.system-card' :
+          entry.target.matches('.route-grid > a') ? '.route-grid > a' : '.mindset';
+        document.querySelectorAll(group).forEach((el) => el.classList.remove('is-scroll-active'));
+        entry.target.classList.add('is-scroll-active');
+      } else if (entry.boundingClientRect.top < 0 || entry.boundingClientRect.top > innerHeight) {
+        entry.target.classList.remove('is-scroll-active');
+      }
+    });
+  }, {
+    threshold: reduceMotion ? 0.15 : 0.42,
+    rootMargin: '-22% 0px -38% 0px'
+  });
+
+  targets.forEach((el) => observer.observe(el));
+})();
